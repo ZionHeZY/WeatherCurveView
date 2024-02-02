@@ -161,6 +161,7 @@ class CustomCurveView @JvmOverloads constructor(
                 canvas.drawText(text, textX, textY, selectedBlockTextPaint)
             }
 
+            //todo modify to config
             val drawable = ContextCompat.getDrawable(context, R.drawable.ic_cloudy)!!
             val drawableWidth = 40.dp2px
             val drawableHeight = 40.dp2px

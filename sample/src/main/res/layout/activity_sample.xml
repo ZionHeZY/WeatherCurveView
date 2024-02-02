@@ -10,7 +10,7 @@
 
     <dev.hezy.curveview.CustomCurveView
         android:id="@+id/temperature"
-        android:layout_width="600dp"
+        android:layout_width="350dp"
         android:layout_height="400dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

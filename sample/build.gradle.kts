@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":CurveView"))
+    implementation(project(":curve-view"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

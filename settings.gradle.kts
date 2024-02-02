@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "CustomCurveView"
 include(":sample")
-include(":CurveView")
+include(":curve-view")
