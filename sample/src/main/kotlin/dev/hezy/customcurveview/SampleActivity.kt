@@ -22,8 +22,11 @@ class SampleActivity : AppCompatActivity() {
 
     private fun initView() {
         binding = ActivitySampleBinding.inflate(layoutInflater)
-        val temperatures = listOf(25f, 30f, 28f, 24f, 26f, 29f, 27f)
-        binding.temperature.setData(temperatures)
+
+        val graphData = listOf(25f, 30f, 28f, 24f, 36f, 29f, 27f)
+        val drawablesForDataPoints = graphData.indices.associateWith { R.drawable.ic_cloudy }
+        binding.temperature.setData(graphData, drawablesForDataPoints)
+
         binding.temperature.setCurrentIndex(2)
         setContentView(binding.root)
     }

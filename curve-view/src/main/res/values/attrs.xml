@@ -5,6 +5,7 @@
         <attr name="lineWidth" format="dimension" />
         <attr name="selectedBlockColor" format="color" />
         <attr name="selectedBlockTextColor" format="color" />
-        <attr name="axisLineOverlySize" format="dimension" />
+        <attr name="gradientColorStart" format="color"/>
+        <attr name="gradientColorEnd" format="color"/>
     </declare-styleable>
 </resources>

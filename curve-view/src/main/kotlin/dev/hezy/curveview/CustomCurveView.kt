@@ -22,23 +22,28 @@ class CustomCurveView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    private var dataPointDrawables: Map<Int, Int> = emptyMap()
+    private var gradientColorStart: Int
+    private var gradientColorEnd: Int
     private var lineColor: Int
     private var lineWidth: Float
     private var selectedBlockColor: Int
     private var selectedBlockTextColor: Int
-    private var axisLineOverlySize: Float
+    private var axisLineOverlySize: Float = 0F
 
-    private val linePath = Path()
-    private val graphBgPath = Path()
     private var dataList: List<Float> = emptyList()
     private var maxValue: Float = 0F
     private var points: List<PointF> = emptyList()
     private var currentIndex: Int = 0
     private var selectedBlockIndex = -1
+    private var iconBottomPadding = 20.dp2px
+    private var iconSize = 40.dp2px
 
     private val graphPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val selectedBlockPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val selectedBlockTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val linePath = Path()
+    private val graphBgPath = Path()
 
     init {
         context.theme.obtainStyledAttributes(
@@ -47,6 +52,12 @@ class CustomCurveView @JvmOverloads constructor(
             0, 0
         ).apply {
             try {
+                gradientColorStart = getColor(
+                    R.styleable.WeatherCurveView_gradientColorStart,
+                    Color.parseColor("#33FFFFFF")
+                )
+                gradientColorEnd =
+                    getColor(R.styleable.WeatherCurveView_gradientColorEnd, Color.TRANSPARENT)
                 lineColor = getColor(R.styleable.WeatherCurveView_lineColor, Color.WHITE)
                 lineWidth = getDimension(R.styleable.WeatherCurveView_lineWidth, 2.dp2px)
                 selectedBlockColor = getColor(
@@ -55,14 +66,41 @@ class CustomCurveView @JvmOverloads constructor(
                 )
                 selectedBlockTextColor =
                     getColor(R.styleable.WeatherCurveView_selectedBlockTextColor, Color.WHITE)
-                axisLineOverlySize =
-                    getDimension(R.styleable.WeatherCurveView_axisLineOverlySize, 100.dp2px)
             } finally {
                 recycle()
             }
         }
 
         setupPaints()
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        drawGraphBackground(canvas)
+        drawGraphLine(canvas)
+        drawDataBlocks(canvas)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val originalWidth = MeasureSpec.getSize(widthMeasureSpec)
+        val originalHeight = MeasureSpec.getSize(heightMeasureSpec)
+
+        val calculatedHeight = (originalWidth * 2) / 3
+        val calculatedWidth = (originalHeight * 3) / 2
+
+        val finalWidth: Int
+        val finalHeight: Int
+
+        if (calculatedHeight <= originalHeight) {
+            finalWidth = originalWidth
+            finalHeight = calculatedHeight
+        } else {
+            finalWidth = calculatedWidth
+            finalHeight = originalHeight
+        }
+
+        setMeasuredDimension(finalWidth, finalHeight)
+        calculatePoints()
     }
 
     private fun setupPaints() {
@@ -85,20 +123,30 @@ class CustomCurveView @JvmOverloads constructor(
         }
     }
 
-    fun setData(data: List<Float>) {
+    fun setData(data: List<Float>, drawables: Map<Int, Int> = emptyMap()) {
         dataList = data.apply {
             points = map {
                 maxValue = if (maxValue >= it) maxValue else it
                 PointF()
             }
         }
+
+        dataPointDrawables = drawables
+        calculatePoints()
+        invalidate()
     }
 
     fun setCurrentIndex(index: Int) {
         if (index in dataList.indices) {
             currentIndex = index
+            selectedBlockIndex = index
             invalidate()
         }
+    }
+
+    fun setDrawableSize(drawableSize: Float) {
+        iconSize = drawableSize
+        invalidate()
     }
 
     private val graphBgGradient by lazy {
@@ -108,28 +156,15 @@ class CustomCurveView @JvmOverloads constructor(
             0F,
             measuredHeight.toFloat(),
             intArrayOf(
-                Color.parseColor("#33FFFFFF"),
-                Color.TRANSPARENT,
+                gradientColorStart,
+                gradientColorEnd,
             ),
             listOf(0.25F, 1F).toFloatArray(),
             Shader.TileMode.REPEAT
         )
     }
 
-    override fun onDraw(canvas: Canvas) {
-        graphPaint.apply {
-            style = Paint.Style.FILL
-            shader = graphBgGradient
-        }
-        canvas.drawPath(graphBgPath, graphPaint)
-
-        graphPaint.apply {
-            color = Color.WHITE
-            style = Paint.Style.STROKE
-            shader = null
-        }
-        canvas.drawPath(linePath, graphPaint)
-
+    private fun drawDataBlocks(canvas: Canvas) {
         val blockWidth = (width - paddingLeft - paddingRight) / dataList.size
         val blockHeight = height - paddingTop - paddingBottom
 
@@ -161,19 +196,22 @@ class CustomCurveView @JvmOverloads constructor(
                 canvas.drawText(text, textX, textY, selectedBlockTextPaint)
             }
 
-            //todo modify to config
-            val drawable = ContextCompat.getDrawable(context, R.drawable.ic_cloudy)!!
-            val drawableWidth = 40.dp2px
-            val drawableHeight = 40.dp2px
-            val drawableLeft = left + (blockWidth - drawableWidth) / 2
-            val drawableTop = top + blockHeight - drawableHeight - 50.dp2px
-            drawable.setBounds(
-                drawableLeft.toInt(),
-                drawableTop.toInt(),
-                (drawableLeft + drawableWidth).toInt(),
-                (drawableTop + drawableHeight).toInt()
-            )
-            drawable.draw(canvas)
+            dataPointDrawables[index]?.let { drawableRes ->
+                val drawable = ContextCompat.getDrawable(context, drawableRes)
+                drawable?.let {
+                    val drawableWidth = iconSize
+                    val drawableHeight = iconSize
+                    val drawableLeft = left + (blockWidth - drawableWidth) / 2
+                    val drawableTop = top + blockHeight - drawableHeight - iconBottomPadding
+                    it.setBounds(
+                        drawableLeft.toInt(),
+                        drawableTop.toInt(),
+                        (drawableLeft + drawableWidth).toInt(),
+                        (drawableTop + drawableHeight).toInt()
+                    )
+                    it.draw(canvas)
+                }
+            }
 
             val currentPoint = points[currentIndex]
             val circleRadius = lineWidth * 4.5F
@@ -188,23 +226,50 @@ class CustomCurveView @JvmOverloads constructor(
         }
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+    private fun drawGraphLine(canvas: Canvas) {
+        graphPaint.apply {
+            color = Color.WHITE
+            style = Paint.Style.STROKE
+            shader = null
+        }
+        canvas.drawPath(linePath, graphPaint)
+    }
+
+    private fun drawGraphBackground(canvas: Canvas) {
+        graphPaint.apply {
+            style = Paint.Style.FILL
+            shader = graphBgGradient
+        }
+        canvas.drawPath(graphBgPath, graphPaint)
+    }
+
+    private fun calculatePoints() {
+        if (points.size != dataList.size) {
+            points = List(dataList.size) { PointF() }
+        }
+
         val w = measuredWidth
         val h = measuredHeight
+
+        axisLineOverlySize = h * 0.2f
         val availableH = h - paddingTop - paddingBottom - lineWidth * 4F - axisLineOverlySize
 
         val oneSpace =
             (w.toFloat() - paddingStart - paddingEnd) / dataList.size
         val leftStart = paddingStart.toFloat()
         val graphTop = paddingTop + lineWidth * 1.5F + axisLineOverlySize
+
         points.forEachIndexed { i, p ->
             p.x = leftStart + i * oneSpace + oneSpace / 2
             dataList[i].also {
                 p.y = graphTop + (availableH - it / maxValue * availableH)
             }
         }
+        constructLinePath()
+        constructBackgroundPath(h, oneSpace, leftStart)
+    }
 
+    private fun constructLinePath() {
         linePath.reset()
         var startP: PointF
         var endP: PointF
@@ -228,7 +293,9 @@ class CustomCurveView @JvmOverloads constructor(
                 linePath.cubicTo(endP.x, endP.y, extendedEndX, endP.y, extendedEndX, endP.y)
             }
         }
+    }
 
+    private fun constructBackgroundPath(h: Int, oneSpace: Float, leftStart: Float) {
         graphBgPath.set(linePath)
         val bottom = h - paddingBottom
         graphBgPath.lineTo(points.last().x + oneSpace / 2, bottom.toFloat())
