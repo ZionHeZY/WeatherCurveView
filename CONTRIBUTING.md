@@ -44,6 +44,8 @@ Use JDK 17 and Android SDK 35. Set `ANDROID_HOME` or create an untracked `local.
 
 These are verification instructions, not a claim that a particular revision or remote CI run passed. The workflow is in [.github/workflows/android.yml](.github/workflows/android.yml).
 
+CI explicitly requests `platform-tools` from `setup-android`: its default also requests the retired `tools` package, which fails SDK setup. The compile SDK/build tools and API 26/35 emulator images are installed by their dedicated steps.
+
 ## Changes and regression tests
 
 Keep changes focused. Preserve the public `dev.hezy.curveview.CustomCurveView` package/class, Java overloads and setters, Kotlin APIs, XML attributes, units and callback semantics unless an intentional compatibility change is discussed and documented. Check both the sample and independent consumer when changing public APIs, resources or publication metadata. Update [README.md](README.md) for user-visible contracts and unreleased migration changes.
