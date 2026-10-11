@@ -1,9 +1,12 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.CustomCurveView" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<resources>
+    <style name="Base.Theme.CustomCurveView" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowBackground">@color/black</item>
+        <item name="android:colorBackground">@color/black</item>
+        <item name="colorPrimary">@color/marker_blue</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
-
     <style name="Theme.CustomCurveView" parent="Base.Theme.CustomCurveView" />
 </resources>

@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CustomCurveView"
+rootProject.name = "WeatherCurveView"
 include(":sample")
 include(":curve-view")

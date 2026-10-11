@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">CustomCurveView</string>
+    <string name="app_name">WeatherCurveView</string>
+    <string name="weather_curve">Weather curve</string>
+    <string name="warm_sample">Warm day · illustrative temperatures</string>
+    <string name="winter_sample">Winter day · illustrative temperatures</string>
+    <string name="temperature_value">%1$d°C</string>
+    <string name="selected_time">At %1$02d:00 · sample day</string>
+    <string name="gesture_hint">Touch or drag the curve to explore. Arrow keys work too.</string>
+    <string name="next_point">Next reading</string>
+    <string name="show_winter">Show winter</string>
+    <string name="show_warm">Show warm day</string>
 </resources>

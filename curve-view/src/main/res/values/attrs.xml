@@ -7,5 +7,18 @@
         <attr name="selectedBlockTextColor" format="color" />
         <attr name="gradientColorStart" format="color"/>
         <attr name="gradientColorEnd" format="color"/>
+        <attr name="markerColor" format="color" />
+        <attr name="markerBorderColor" format="color" />
+        <attr name="markerRadius" format="dimension" />
+        <attr name="valueTextSize" format="dimension" />
+        <attr name="labelTextColor" format="color" />
+        <attr name="labelTextSize" format="dimension" />
+        <attr name="iconSize" format="dimension" />
+        <attr name="iconBottomPadding" format="dimension" />
+        <attr name="iconTint" format="color" />
+        <attr name="minimumRange" format="float" />
+        <attr name="showLabels" format="boolean" />
+        <attr name="selectionAnimationDuration" format="integer" />
+        <attr name="emptyText" format="string" />
     </declare-styleable>
 </resources>

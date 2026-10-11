@@ -1,0 +1,8 @@
+<resources>
+    <style name="ConsumerCurve">
+        <item name="lineColor">#FFFFFFFF</item>
+        <item name="lineWidth">3dp</item>
+        <item name="gradientColorStart">#33FFFFFF</item>
+        <item name="gradientColorEnd">#00FFFFFF</item>
+    </style>
+</resources>
